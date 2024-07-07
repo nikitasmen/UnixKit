@@ -4,3 +4,5 @@ echo "NOTICE: The script must be executable"
 echo " chmod u+x ./path/to/your/app/your_script.sh"
 echo "To run the scripts as internal commands, use the folowing command"
 echo "sudo cp -r ./path/to/your/app /usr/local/bin"
+echo "Or run script install </path/to/script>" 
+ 

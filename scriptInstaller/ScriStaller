@@ -1,0 +1,18 @@
+#!/bin/bash
+
+
+# ScriStaller is a script that allows you to install scripts in your system
+script=$1
+
+# Check if the script exists
+if [ -e "$script" ]; then
+    # Check if it's a file
+    if [ -f "$script" ]; then
+        # Copy the script to the system
+        sudo cp "$script" /usr/local/bin/
+        sudo chmod u+x "/usr/local/bin/$(basename "$script")"
+        echo "Script $script installed."
+    fi
+else
+    echo "Script $script does not exist."
+fi
