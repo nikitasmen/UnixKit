@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# Use xdotool to wait for a mouse click on the next window
+# killer is xkill reverse engineered made in order to fix a problem noticed in the xkill command 
+# the bug was that when xkill was used to kill a process, you could also kill the desktop 
+# and the only way to fix it was to restart the computer
+
 window_id=$(xdotool selectwindow)
 
 if [ -n "$window_id" ]; then
@@ -9,8 +12,6 @@ if [ -n "$window_id" ]; then
 
     if [[ "$window_name" == *"Desktop"* ]]; then
 	    echo "No application window to close or background selected." 
-	    sleep 2 
-        exit
     fi
     
     pid=$(xprop _NET_WM_PID -id $window_id | awk '/_NET_WM_PID\(CARDINAL\)/{print $3}')
@@ -18,8 +19,6 @@ if [ -n "$window_id" ]; then
     if [ -n "$pid" ]; then
         echo "Killing process with PID: $pid"
         kill $pid
-        sleep 2 
-        exit 
     else
         echo "Failed to retrieve PID for window."
     fi
