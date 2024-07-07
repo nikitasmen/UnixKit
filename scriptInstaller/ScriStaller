@@ -3,12 +3,33 @@
 
 # ScriStaller is a script that allows you to install scripts in your system
 script=$1
-
+script_name=$(basename "$script")
 # Check if the script exists
 if [ -e "$script" ]; then
     # Check if it's a file
     if [ -f "$script" ]; then
         # Copy the script to the system
+        # Check if the script already exists
+        if [ -e "/usr/local/bin/$script_name" ]; then
+            
+            echo "Script $script_name already exists."
+            read -p "Do you want to replace it? (y/n): " answer
+            case $answer in
+                [Yy]* )
+                    sudo cp "$script" /usr/local/bin/
+                    sudo chmod u+x "/usr/local/bin/$script_name"
+                    echo "Script $script_name replaced."
+                    ;;
+                [Nn]* )
+                    echo "Script installation aborted."
+                    exit 1
+                    ;;
+                * )
+                    echo "Invalid response. Script installation aborted."
+                    exit 1
+                    ;;
+            esac
+        fi
         sudo cp "$script" /usr/local/bin/
         sudo chmod u+x "/usr/local/bin/$(basename "$script")"
         echo "Script $script installed."

@@ -1,0 +1,47 @@
+#!/bin/bash 
+
+#This script finds the path of the secired files 
+
+
+#TODO: :
+#GLOBALLY Encrypt the folder 
+#$1 is password to unlock 
+
+option=$1
+password=$2
+file_name=$3
+
+# Assuming the secured files are stored in a specific directory
+secured_directory="/home/makis/Documents/folder/"
+# Function to show file names
+show_file_names() {
+    echo "Secured file names:"
+    ls "$secured_directory" 
+}
+
+# Function to show path of a specific file
+show_file_path() {
+    find "$secured_directory" -type f -name "$file_name" -exec realpath {} \;
+}
+
+if [ ! -d "$secured_directory" ]; then
+    echo "Error: Secured directory does not exist."
+    exit 1
+fi
+# Main logic
+if [ "$option" == "-s" ]; then
+    #ask for password 
+    show_file_names
+elif [ "$option" == "-p" ] && [ -n "$file_name" ]; then
+    #ask for password
+    show_file_path "$file_name"
+elif [ " $option" == "-h"]; then 
+    echo "This script finds the path of the encrypted files"
+    echo "Usage: passpath.sh [option] [password] [file_name]"
+    echo "Options:"
+    echo "  -s: Show file names"
+    echo "  -p: Show path of a specific file"
+    echo "  -h: Show help"
+else
+    echo "Invalid option or missing file name for path option."
+fi
