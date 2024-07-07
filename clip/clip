@@ -1,0 +1,38 @@
+#!/bin/bash
+
+
+# clip is a script that allows you to copy the contents of a file to the clipboard 
+# Pass as argument $1 the file name and $2 the number of lines to copy to the clipboard
+# If $2 is not passed, the entire file will be copied to the clipboard 
+
+#get the file name 
+target=$1
+num_lines=$2 
+
+# Check if the target exists
+if [ -e "$target" ]; then
+    # Check if it's a file
+    if [ -f "$target" ]; then
+        # Copy the contents of the file to the clipboard
+        #or the first $lines lines of the file
+        # Copy each of the first $lines lines of the file to the clipboard in separate operations
+        if [ -z "$num_lines" ]; then
+            cat "$target" | xclip -selection clipboard
+            echo "Contents of $target copied to clipboard."
+        else
+            count=0
+            while IFS= read -r line; do
+                # Increment the counter
+                count=$((count + 1))
+                echo "$line" | xclip -selection clipboard 
+                # Break the loop if the specified number of lines has been read
+                if [ $count -ge $num_lines ]; then
+                    break
+                fi
+            done < "$target"
+            echo "Contents of $target copied to clipboard."
+        fi
+    fi
+else
+    echo "Target $target does not exist."
+fi
