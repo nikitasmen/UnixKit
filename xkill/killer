@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Use xdotool to wait for a mouse click on the next window
+window_id=$(xdotool selectwindow)
+
+if [ -n "$window_id" ]; then
+
+    window_name=$(xprop -id $window_id _NET_WM_NAME | awk -F '"' '{print $2}')
+
+    if [[ "$window_name" == *"Desktop"* ]]; then
+	    echo "No application window to close or background selected." 
+	    sleep 2 
+        exit
+    fi
+    
+    pid=$(xprop _NET_WM_PID -id $window_id | awk '/_NET_WM_PID\(CARDINAL\)/{print $3}')
+    
+    if [ -n "$pid" ]; then
+        echo "Killing process with PID: $pid"
+        kill $pid
+        sleep 2 
+        exit 
+    else
+        echo "Failed to retrieve PID for window."
+    fi
+else
+    echo "No window selected."
+fi

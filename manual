@@ -1,0 +1,6 @@
+echo "Create any .sh script in a folder named by the app" 
+echo "Commit any updates may do" 
+echo "NOTICE: The script must be executable"
+echo " chmod u+x ./path/to/your/app/your_script.sh"
+echo "To run the scripts as internal commands, use the folowing command"
+echo "sudo cp -r ./path/to/your/app /usr/local/bin"
