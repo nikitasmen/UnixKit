@@ -5,34 +5,101 @@
 # Pass as argument $1 the file name and $2 the number of lines to copy to the clipboard
 # If $2 is not passed, the entire file will be copied to the clipboard 
 
-#get the file name 
+#get the file name  
+#get num of lines if want to copy only some lines
 target=$1
-num_lines=$2 
 
-# Check if the target exists
-if [ -e "$target" ]; then
-    # Check if it's a file
-    if [ -f "$target" ]; then
-        # Copy the contents of the file to the clipboard
-        #or the first $lines lines of the file
-        # Copy each of the first $lines lines of the file to the clipboard in separate operations
-        if [ -z "$num_lines" ]; then
-            cat "$target" | xclip -selection clipboard
-            echo "Contents of $target copied to clipboard."
-        else
-            count=0
-            while IFS= read -r line; do
-                # Increment the counter
-                count=$((count + 1))
-                echo "$line" | xclip -selection clipboard 
-                # Break the loop if the specified number of lines has been read
-                if [ $count -ge $num_lines ]; then
-                    break
-                fi
-            done < "$target"
-            echo "Contents of $target copied to clipboard."
+#help 
+if [ "$target" == "-h" ] || [ "$target" == "--help" ]; then
+    echo "Usage: clip <file> -p -lines -h"
+    echo "-p: path to search for the file"
+    echo "-lines: number of lines to copy to the clipboard"
+    echo "-h: display this help message"
+    echo "Copy the contents of a file to the clipboard."
+    echo "If numOfLines is not provided, the entire file will be copied."
+    echo "Dont bother with paths and stuff the script will ask later if needed" 
+    exit 0
+fi
+
+# xhexk extrea args 
+if [ "$2" == "-lines" ] || [ "$4" == "-lines" ]; then 
+    numOfLines=$5
+else 
+    numOfLines=${numOfLines:-0}
+fi 
+
+
+baseTarget=$(basename "$target")
+if [ "$target" == "$baseTarget" ]; then 
+    if [ "$2" == "-p" ]; then
+        path=$3
+        mapfile -t found_files < <(find "$path" -type f -name "$baseTarget")
+    else
+        mapfile -t found_files < <(find  -type f -name "$baseTarget")
+        echo "Found files:" "${found_files[@]}"
+    fi 
+else 
+    
+    path1=$(dirname "$(realpath "$target")")
+    path=$(dirname "$(realpath "$3")")
+    
+    #find correct path
+    if [ -d "$path1" ] && [ -d "$path" ]; then
+        # Count slashes to determine depth
+        slashes_path1=$(echo "$path1" | tr -cd '/' | wc -c)
+        slashes_path=$(echo "$path" | tr -cd '/' | wc -c)
+
+        if [ "$slashes_path1" -lt "$slashes_path" ]; then
+            path=$path1
+        fi
+    else 
+        if [ -d "$path1" ]; then 
+            path=$path1
+        elif [ ! -d "$path" ]; then 
+            echo "Invalid path"
+            exit 1
         fi
     fi
+
+    mapfile -t found_files < <(find "$path" -type f -name "$baseTarget")
+fi
+
+# Check if more than one target exists
+if [ ${#found_files[@]} -gt 1 ]; then
+    echo "Multiple files found. Please choose one:"
+    select option in "${found_files[@]}"; do
+        if [ -n "$option" ]; then
+            target=$option
+            break
+        else
+            echo "Invalid choice. Please try again."
+        fi
+    done
+elif [ ${#found_files[@]} -eq 1 ]; then
+    target=${found_files[0]}
 else
     echo "Target $target does not exist."
+    exit 1
+fi
+
+# Copy the contents of the file to the clipboard
+#or the first $lines lines of the file
+# Copy each of the first $lines lines of the file to the clipboard in separate operations
+if [ -z "$numOfLines" ]; then
+    cat "$target" | xclip -selection clipboard
+    echo "Contents of $target copied to clipboard."
+else
+    count=0
+    while IFS= read -r line; do
+        # Increment the counter
+        count=$((count + 1))
+        echo "$line" 
+        echo "$line" | xclip -selection clipboard 
+        # Break the loop if the specified number of lines has been read
+        if (( count >= numOfLines )); then
+            echo "count: $count numOfLines: $numOfLines"
+            break
+        fi
+    done < "$target"
+    echo "Contents of $target copied to clipboard."
 fi
