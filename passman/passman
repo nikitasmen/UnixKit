@@ -1,0 +1,99 @@
+#!/bin/bash
+
+DB_NAME="passwords"
+DB_USER="${DB_USER}"
+DB_PASS="${DB_PASS}"
+KEYFILE="/home/makis/Documents/Kubuntu Fixies/keyfile"  # Update this to the absolute path of your keyfile
+
+# Options:
+#   -n: Add a new record
+#   -e: edit a record
+#   -d: delete a record
+#   -s: show platforms
+#   -g: get a record
+
+runsql() {
+    mysql --user="$DB_USER" --password="$DB_PASS" "$DB_NAME" -NBe "$1"
+}
+
+setup() {
+    # Check if the table exists by trying to select from it and create if it doesn't
+    mysql --user="$DB_USER" --password="$DB_PASS" -e "CREATE DATABASE IF NOT EXISTS $DB_NAME"
+    runsql "CREATE TABLE IF NOT EXISTS passwords (id INT AUTO_INCREMENT PRIMARY KEY, platform VARCHAR(40), uname VARCHAR(25), password VARCHAR(255));"
+}
+
+passFix() {
+    local password="$1"
+    encrypted_password=$(printf "%s" "$password" | openssl enc -aes-256-cbc -a -salt -pass file:"$KEYFILE")
+    echo "$encrypted_password"
+}
+
+decrypt_password() {
+    local encrypted_password="$1"
+    decrypted_password=$(printf "%s" "$encrypted_password" | openssl enc -aes-256-cbc -a -d -pass file:"$KEYFILE")
+    echo "$decrypted_password"
+}
+
+add_record() {
+    echo "Enter platform:"
+    read platform
+    echo "Enter username:"
+    read uname
+    echo "Enter password:"
+    read -s password  
+    encrypted_password=$(passFix "$password")
+    runsql "INSERT INTO passwords (platform, uname, password) VALUES ('$platform', '$uname', '$encrypted_password');"
+    echo "Record added."
+}
+
+edit_record() {
+    echo "Enter platform to edit:"
+    read platform
+    echo "Enter new username:"
+    read uname
+    echo "Enter new password:"
+    read -s password
+    encrypted_password=$(passFix "$password")
+    runsql "UPDATE passwords SET uname='$uname', password='$encrypted_password' WHERE platform='$platform';"
+    echo "Record updated."
+}
+
+delete_record() {
+    echo "Enter platform to delete:"
+    read platform
+    runsql "DELETE FROM passwords WHERE platform='$platform';"
+    echo "Record deleted."
+}
+
+show_platforms() {
+    runsql "SELECT platform FROM passwords;"
+}
+
+get_record() {
+    echo "Enter platform to get:"
+    read platform
+    
+    encrypted_password=$(runsql "SELECT password FROM passwords WHERE platform='$platform';")
+    
+    # Decrypt the password
+    if [[ ! -z "$encrypted_password" ]]; then
+        decrypted_password=$(decrypt_password "$encrypted_password")
+        # Fetch and display the username
+        uname=$(runsql "SELECT uname FROM passwords WHERE platform='$platform';")
+        echo "Username: $uname"
+        echo "Password: $decrypted_password"
+    else
+        echo "No record found for $platform."
+    fi
+}
+
+setup
+
+case "$1" in
+    -n) add_record ;;
+    -e) edit_record ;;
+    -d) delete_record ;;
+    -s) show_platforms ;;
+    -g) get_record ;;
+    *) echo "Usage: $0 [-n (new record)|-e (edit record)|-d (delete record)|-s (show platforms)|-g (get record)]" ;;
+esac
