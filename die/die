@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#execute to shutdown 
+#-s for sleep 
+#-l for logout 
+
+case "$1" in
+  -s)
+    echo "Going to sleep..."
+    systemctl suspend
+    ;;
+  -l)
+    echo "Logging out..."
+    gnome-session-quit --logout --no-prompt
+    ;;
+  *)
+    echo "Shutting down..."
+    echo "Press ^C to cancel" 
+    sleep  5
+    systemctl poweroff
+    ;;
+esac
