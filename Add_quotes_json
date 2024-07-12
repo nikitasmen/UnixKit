@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Function to add double quotes around JSON keys
+add_quotes_to_keys() {
+    local json=$1
+    echo "$json" | sed -E 's/([a-zA-Z0-9_]+):/"\1":/g'
+}
+
+# Check if input file is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <input-json-file>"
+    exit 1
+fi
+
+# Read input JSON file
+input_json=$(cat "$1")
+
+# Process JSON to add quotes to keys
+output_json=$(add_quotes_to_keys "$input_json")
+
+# Output the result
+echo "$output_json"
