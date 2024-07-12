@@ -1,0 +1,60 @@
+#!/bin/bash
+
+#script that stores zoom meeting links and opens them 
+#in the default browser or zoom app 
+#the links are stored in a file called zoomer.zoom 
+#form of the file: 
+# <linkName>: <link>
+
+
+zoomerFile=".zoomer.zoom"
+
+setup() {
+    echo "setting up zoomer..."
+    if [ ! -f "$zoomerFile" ]; then
+        echo "Creating zoomer file..."
+        touch "$zoomerFile"
+    fi
+}
+
+# Function to add a link
+add_link() {
+    echo "Enter link name:"
+    read linkName
+    echo "Enter link URL:"
+    read linkURL
+    echo "$linkName: $linkURL" >> "$zoomerFile"
+    echo "Link added."
+}
+
+# Function to open a link
+open_link() {
+    linkName="$1"
+    link=$(grep "^$linkName: " "$zoomerFile" | cut -d ' ' -f 2-)
+    if [ -n "$link" ]; then
+        zoom --url="$link"
+    else
+        echo "Link not found."
+    fi
+}
+
+# Function to list all links
+list_links() {
+    echo "Stored links:"
+    cat "$zoomerFile"
+}
+
+# Main script logic
+setup
+if [ $# -eq 0 ]; then
+    list_links
+    echo "Enter the name of the link to open:"
+    read choice
+    open_link "$choice"
+elif [ "$1" == "-n" ]; then
+    add_link
+elif [ "$1" == "-a" ]; then
+    list_links
+else
+    open_link "$1"
+fi
