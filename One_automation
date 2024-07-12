@@ -1,0 +1,47 @@
+#!/bin/bash
+
+#automation to remove extensions from all files in a directory
+#re commit each file with a new commit message 
+##### The message is the name of the file without the extension #####
+#and push to github
+
+
+# Function to remove extension from a file
+remove_extension(){
+    dirName=$2
+    fileName=$(basename -- "$1")
+    fileName="${1%.*}"
+    fileName=$(basename -- "$fileName")
+    sudo mv "$file" "$dirName/$fileName"
+}
+
+recommit(){
+    dirName=$(dirname $1)
+    fileName=$(basename -- "$1")
+    cd "$dirName" || exit
+    git add $fileName
+    git commit -m "$fileName"
+    git push
+}
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    echo "Usage: recommit <path>"
+    echo "Remove extensions from all files in a directory, recommit each file with a new commit message, and push to GitHub."
+    exit 0
+fi
+
+path=$1
+echo "Recommitting files in $path"
+read -p "Are you sure you want to continue? (y/n): " choice
+if [ "$choice" != "y" ]; then
+    echo "Exiting..."
+    exit 0
+fi
+# Loop through all files in the directory
+cd "$path" || exit
+for file in "$path"/*; do
+    if [ -f "$file" ]; then
+        remove_extension "$file" "$path" 
+        recommit "$dirName/$fileName"
+    fi
+done
