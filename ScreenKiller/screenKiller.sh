@@ -1,0 +1,30 @@
+
+bash
+Copied!
+#!/bin/bash
+
+# Function to turn off the screen
+turn_off_screen() {
+    echo "Turning off the screen..."
+    xset dpms force off
+}
+
+# Function to turn on the screen
+turn_on_screen() {
+    echo "Turning on the screen..."
+    xset dpms force on
+}
+
+# Turn off the screen initially
+turn_off_screen
+
+# Monitor for keypresses
+while true; do
+    # Wait for the user to press the "p" key
+    read -n 1 key
+    if [ "$key" = "p" ]; then
+        # Turn on the screen when "p" is pressed
+        turn_on_screen
+        break
+    fi
+done
