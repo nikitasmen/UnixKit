@@ -1,0 +1,44 @@
+#!bin/bash
+
+#script that runs scripts withoput caring about paths 
+#and compiler as it founds the script and runs it 
+#taks as argument only the name of the script 
+
+
+
+script=$1
+script_name=$(basename "$script") 
+scriptDir=$(dirname "$script")
+#Get extension of file 
+extension="${script##*.}"
+
+case $extension in
+    "py")
+        python3 $script
+        ;;
+    "sh")
+        bash $script
+        ;;
+    "js")
+        node $script        
+        ;;
+    "java")
+        javac $script
+        java $script_name
+        ;;
+    "cpp")
+        g++ $script
+        ./a.out
+        ;;
+    "c")
+        gcc $script
+        ./a.out
+        ;;
+    "test.ts")
+        npx playwright test $script 
+    
+    *)
+        echo "Extension not supported"
+        ;;
+esacs
+

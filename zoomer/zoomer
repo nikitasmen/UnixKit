@@ -6,14 +6,24 @@
 #form of the file: 
 # <linkName>: <link>
 
+while IFS='=' read -r key value
+do
+  if [[ -n $key && -n $value ]]; then
+    export "$key=$value"
+  else
+    echo "Skipping invalid line: $key=$value"
+  fi
+done < ".env"
 
 zoomerFile=".zoomer.zoom"
-
+zoomPath="$ZoomFilePath"
+echo "Zoom path: $zoomPath"
 setup() {
     echo "setting up zoomer..."
     if [ ! -f "$zoomerFile" ]; then
         echo "Creating zoomer file..."
-        touch "$zoomerFile"
+        sudo mkdir -p "$zoomPath"
+        sudo touch "$zoomPath/$zoomerFile"
     fi
 }
 
