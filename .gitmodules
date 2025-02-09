@@ -1,0 +1,3 @@
+[submodule "password-manager-"]
+	path = password-manager-
+	url = https://github.com/nikitasmen/password-manager-.git
