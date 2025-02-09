@@ -1,0 +1,18 @@
+
+#script that runs custom scripts from this repo 
+#takes as argument only the name of the script
+#and the parameters of the script 
+
+#all available scripts of the repo
+availableScripts=$(ls -d */ | cut -f1 -d'/')
+#get the script name from each name 
+echo "Available scripts: "
+echo $availableScripts
+echo "Choose a script to run: "
+read scriptName
+echo "Choose the parameters of the script: "
+read scriptParameters
+
+#run the script
+scriptRunner $scriptName $scriptParameters
+
