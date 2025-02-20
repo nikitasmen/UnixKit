@@ -3,6 +3,7 @@
 
 # ScriStaller is a script that allows you to install scripts in your system
 script=$1
+commandName=$2 
 script_name=$(basename "$script")
 # Check if the script exists
 if [ -e "$script" ]; then
@@ -33,6 +34,9 @@ if [ -e "$script" ]; then
         sudo cp "$script" /usr/local/bin/
         sudo chmod u+x "/usr/local/bin/$(basename "$script")"
         echo "Script $script installed."
+        cd /usr/local/bin
+        sudo mv $script_name $commandName
+        echo "Script $script_name renamed to $commandName"
     fi
 else
     echo "Script $script does not exist."
