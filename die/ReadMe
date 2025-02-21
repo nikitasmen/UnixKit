@@ -1,0 +1,50 @@
+**Die**
+
+**What does this script do?**
+This Bash script provides a simple way to shut down, log out, or put your 
+system to sleep using command-line arguments.
+
+**How to use this script**
+
+To use this script, simply run it and provide one of the following 
+options:
+
+* `-s` (short for "sleep"): Puts your system to sleep.
+* `-l` (short for "logout"): Logs you out of your GNOME session.
+* (no option): Shuts down your system.
+
+For example:
+```
+./die -s
+```
+or
+```
+./die -l
+```
+or simply
+```
+./die
+```
+
+**How the script works**
+
+Here's a breakdown of how the script works:
+
+1. The script checks the first command-line argument (`$1`) to see what 
+action you want to take.
+2. If you choose `-s`, it will put your system to sleep using `systemctl 
+suspend`.
+3. If you choose `-l`, it will log you out of your GNOME session using 
+`gnome-session-quit --logout --no-prompt`.
+4. If you don't specify an option, the script will shut down your system 
+after a 5-second delay using `sleep` and then `systemctl poweroff`.
+
+**Tips and Tricks**
+
+* Be careful when using this script! It can cause your system to shut down 
+or log out without warning.
+* You can use the `^C` key combination (Control+C) to cancel the shutdown 
+process if you change your mind.
+* This script assumes that you have `systemctl`, `gnome-session-quit`, and 
+other necessary commands installed on your system.
+
