@@ -1,0 +1,41 @@
+
+**Clip: A Script to Copy File Contents to the Clipboard**
+
+**What is Clip?**
+Clip is a Bash script that allows you to copy the contents of a file to your system's clipboard. You can specify the number of lines to copy, or copy the entire file if you don't provide a line count.
+
+**How to Use Clip**
+
+To use Clip, simply run the script and provide the following two arguments:
+
+* `$1`: The name of the file you want to copy.
+* `(optional)` `$2`: The number of lines you want to copy. If you omit this argument, the entire file will be copied.
+
+For example:
+```
+./clip my_file.txt 5
+```
+This would copy the first 5 lines of `my_file.txt` to your clipboard.
+
+**Help and Options**
+
+If you run Clip with the `-h` or `--help` option, it will display a help message that explains how to use the script:
+```
+Usage: clip <file> [-p path] [-lines num] [-h]
+  -p: Specify the path to search for the file
+  -lines: Number of lines to copy (default is entire file)
+  -h: Display this help message
+```
+**Finding the File**
+
+If you don't provide a path with your file name, Clip will assume that the file is in the current directory. If there are multiple files with the same name, Clip will prompt you to choose one.
+
+**Copying the Contents**
+
+Once you've specified the file and (optional) line count, Clip will copy the contents of the file to your clipboard. If you chose to copy a specific number of lines, it will do so in separate operations for each line.
+
+**Known Issues**
+
+* If there are multiple files with the same name, you'll need to manually choose one.
+* The script uses `xclip` to interact with the clipboard, which may not work on all systems.
+
