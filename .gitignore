@@ -3,3 +3,6 @@
 
 #ignore all .vscode files
 .vscode
+
+#ignore DatArch folder 
+DatArch
