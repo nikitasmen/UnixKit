@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Prompt user for branch to keep
+echo "Enter the branch name you want to keep:"
+read KEEP_BRANCH
+
+# # Check if the branch exists
+# if ! git show-ref --verify --quiet refs/heads/$KEEP_BRANCH; then
+#     echo "Error: Branch '$KEEP_BRANCH' does not exist."
+#     exit 1
+# fi
+
+# Delete all branches that have been merged into the specified branch except the specified one
+git branch --merged $KEEP_BRANCH | grep -v "$KEEP_BRANCH" | xargs git branch -d
