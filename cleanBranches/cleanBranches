@@ -1,14 +1,82 @@
 #!/bin/bash
 
+# Function to display usage
+usage() {
+    echo "Usage: $0 [-f|--force] [-i|--interactive]"
+    echo "  -f, --force        Force delete branches without confirmation"
+    echo "  -i, --interactive  Enable interactive mode for selective branch deletion"
+    exit 1
+}
+
+# Parse command line options
+FORCE_DELETE=false
+INTERACTIVE_MODE=false
+
+while [[ "$1" != "" ]]; do
+    case $1 in
+        -f | --force )        FORCE_DELETE=true
+                              ;;
+        -i | --interactive )  INTERACTIVE_MODE=true
+                              ;;
+        -h | --help )         usage
+                              ;;
+        * )                   usage
+                              ;;
+    esac
+    shift
+done
+
 # Prompt user for branch to keep
 echo "Enter the branch name you want to keep:"
 read KEEP_BRANCH
 
-# # Check if the branch exists
-# if ! git show-ref --verify --quiet refs/heads/$KEEP_BRANCH; then
-#     echo "Error: Branch '$KEEP_BRANCH' does not exist."
-#     exit 1
-# fi
+# Check if the branch exists
+if ! git show-ref --verify --quiet refs/heads/$KEEP_BRANCH; then
+    echo "Error: Branch '$KEEP_BRANCH' does not exist."
+    exit 1
+fi
 
-# Delete all branches that have been merged into the specified branch except the specified one
-git branch --merged $KEEP_BRANCH | grep -v "$KEEP_BRANCH" | xargs git branch -d
+# List branches that have been merged into the specified branch
+MERGED_BRANCHES=$(git branch --merged $KEEP_BRANCH | grep -v "$KEEP_BRANCH")
+
+if [ -z "$MERGED_BRANCHES" ]; then
+    echo "No branches have been merged into '$KEEP_BRANCH'."
+    exit 0
+fi
+
+# Function to delete branches
+delete_branch() {
+    local branch=$1
+    if $FORCE_DELETE; then
+        git branch -D $branch
+    else
+        git branch -d $branch
+    fi
+}
+
+# Delete branches
+if $INTERACTIVE_MODE; then
+    echo "The following branches have been merged into '$KEEP_BRANCH':"
+    echo "$MERGED_BRANCHES"
+    echo "Do you want to delete these branches? (y/n)"
+    read CONFIRM
+    if [ "$CONFIRM" == "y" ]; then
+        for branch in $MERGED_BRANCHES; do
+            echo "Delete branch '$branch'? (y/n)"
+            read DELETE_CONFIRM
+            if [ "$DELETE_CONFIRM" == "y" ]; then
+                delete_branch $branch
+            fi
+        done
+    else
+        echo "No branches were deleted."
+    fi
+else
+    echo "Deleting the following branches that have been merged into '$KEEP_BRANCH':"
+    echo "$MERGED_BRANCHES"
+    for branch in $MERGED_BRANCHES; do
+        delete_branch $branch
+    done
+fi
+
+echo "Branch cleanup complete."
