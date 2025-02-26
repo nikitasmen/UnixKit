@@ -1,0 +1,25 @@
+# cleanBranches Script
+
+## Overview
+The `cleanBranches` script is designed to help you manage and clean up your Git branches. It automates the process of deleting local branches that have already been merged into the main branch, helping you keep your repository clean and organized.
+
+## Features
+- List all local branches
+- Delete local branches that have been merged into the main branch
+- Option to force delete branches
+- Interactive mode for selective branch deletion
+
+## Usage
+1. Clone the repository containing the `cleanBranches` script.
+2. Navigate to the directory containing the script.
+3. Run the script using the following command:
+    ```
+    ./cleanBranches
+    ```
+
+## Options
+- `-f` or `--force`: Force delete branches without confirmation.
+- `-i` or `--interactive`: Enable interactive mode for selective branch deletion.
+
+## Example
+To run the script in interactive mode:
