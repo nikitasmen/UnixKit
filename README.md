@@ -1,10 +1,10 @@
-# KubuntuCustoms
+# UnitKit
 
 A collection of custom Bash scripts for Linux environment automation and productivity enhancement.
 
 ## Overview
 
-KubuntuCustoms offers various utility scripts that help automate common tasks and enhance productivity in a Linux environment. These scripts cover various aspects of system management, file operations, and development workflows.
+UnitKit offers various utility scripts that help automate common tasks and enhance productivity in a Linux environment. These scripts cover various aspects of system management, file operations, and development workflows.
 
 ## Scripts
 
