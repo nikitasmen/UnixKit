@@ -116,16 +116,20 @@
     vim           # Optional: Editor for editing configuration.nix
     helix         # Text Editor 
     p7zip         # File Archiver
+    texliveFull   # Tex Live enviroment
+    tree          # Directory structure viewer
 
     # --- Development Environment ---
     vscode        # Visual Studio Code editor
     docker        # Docker Container Application 
+
     # --- Browsers ---
     opera         # Web browser
 
     # --- Programmin stuff --- 
     nodejs
     playwright-driver
+
     # --- Media ---
     spotify       # Music streaming client
 
