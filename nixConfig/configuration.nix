@@ -85,6 +85,8 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     #  thunderbird
+    #
+    slack
     ];
   };
 
@@ -113,6 +115,7 @@
     # wget        # Optional: CLI tool for downloading files
     vim           # Optional: Editor for editing configuration.nix
     helix         # Text Editor 
+    p7zip         # File Archiver
 
     # --- Development Environment ---
     vscode        # Visual Studio Code editor
@@ -127,7 +130,6 @@
     spotify       # Music streaming client
 
     # --- Communication --- 
-    slack
     discord-ptb     # Discord official client  
     # legcord       # Discord alternative UNOFFICIAL CLIENT
 
