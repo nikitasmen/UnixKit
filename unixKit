@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Get the script directory, even when called via symlink
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Check args
+if [ $# -lt 1 ]; then
+  echo "Usage: app <folderName> [args...]"
+  echo "Example: app clip arg1 arg2"
+  exit 1
+fi
+
+COMMAND="$1"
+shift
+
+TARGET="$SCRIPT_DIR/$COMMAND/$COMMAND"
+
+if [ ! -f "$TARGET" ]; then
+  echo "Error: Script $TARGET not found"
+  exit 1
+fi
+
+# Run the target script with remaining arguments
+exec "$TARGET" "$@"
