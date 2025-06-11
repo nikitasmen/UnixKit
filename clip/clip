@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/usr/bin/env bash 
 
 # clip is a script that allows you to copy the contents of a file to the clipboard 
 # Pass as argument $1 the file name and $2 the number of lines to copy to the clipboard

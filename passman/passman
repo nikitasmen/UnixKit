@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 DB_NAME="passwords"
 DB_USER="${DB_USER}"

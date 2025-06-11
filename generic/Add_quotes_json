@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Function to add double quotes around JSON keys
 add_quotes_to_keys() {

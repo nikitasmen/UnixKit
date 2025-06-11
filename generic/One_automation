@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #automation to remove extensions from all files in a directory
 #re commit each file with a new commit message 

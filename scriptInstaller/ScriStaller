@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 
 # ScriStaller is a script that allows you to install scripts in your system

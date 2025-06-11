@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # killer is xkill reverse engineered made in order to fix a problem noticed in the xkill command 
 # the bug was that when xkill was used to kill a process, you could also kill the desktop 
