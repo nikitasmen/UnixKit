@@ -1,2 +1,11 @@
-docker exec -it ollama ollama run llama3
+#!/usr/bin/env bash
 
+set -e
+
+CONTAINER_NAME="ollama"
+IMAGE_NAME="ollama/ollama"
+PORT="11434"
+MODEL="${1:-llama3}"
+
+echo "🧠 Running model: $MODEL"
+docker exec -it "$CONTAINER_NAME" ollama run "$MODEL"
