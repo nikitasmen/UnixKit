@@ -5,11 +5,31 @@ set -euo pipefail
 # Get the script directory, even when called via symlink
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Check args
-if [ $# -lt 1 ]; then
-  echo "Usage: app <folderName> [args...]"
-  echo "Example: app clip arg1 arg2"
+# Show usage
+usage() {
+  echo "Usage: $(basename "$0") <folderName> [args...]"
+  echo "       $(basename "$0") -l | --list   # List available scripts"
+  echo "Example: $(basename "$0") clip arg1 arg2"
   exit 1
+}
+
+# Handle -l or --list
+if [[ "${1:-}" == "-l" || "${1:-}" == "--list" ]]; then
+  echo "Available scripts:"
+  tree
+  for dir in "$SCRIPT_DIR"/*/; do
+    script_name="$(basename "$dir")"
+    script_path="$dir$script_name"
+    if [[ -f "$script_path" && -x "$script_path" ]]; then
+      echo "  $script_name"
+    fi
+  done
+  exit 0
+fi
+
+# Check arguments
+if [ $# -lt 1 ]; then
+  usage
 fi
 
 COMMAND="$1"
