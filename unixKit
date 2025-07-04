@@ -4,8 +4,8 @@ set -euo pipefail
 
 # Get the script directory, even when called via symlink
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Show usage
+echo "dir:  $SCRIPT_DIR"
+#  Show usage
 usage() {
   echo "Usage: $(basename "$0") <folderName> [args...]"
   echo "       $(basename "$0") -l | --list   # List available scripts"
