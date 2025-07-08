@@ -105,8 +105,10 @@ if command -v pbcopy >/dev/null 2>&1; then
     CLIP_CMD="pbcopy"
 elif command -v xclip >/dev/null 2>&1; then
     CLIP_CMD="xclip -selection clipboard"
+elif command -v wl-copy >/dev/null 2>&1; then
+    CLIP_CMD="wl-copy"
 else
-    echo "Error: No clipboard command found. Please install xclip (Linux) or use macOS."
+    echo "Error: No clipboard command found. Please install xclip (X11), wl-clipboard (Wayland), or use macOS."
     exit 1
 fi
 
