@@ -1,4 +1,4 @@
-#!/usr/bin/env bash 
+#!/bin/bash 
 
 # clip is a script that allows you to copy the contents of a file to the clipboard 
 # Pass as argument $1 the file name and $2 the number of lines to copy to the clipboard
@@ -6,10 +6,9 @@
 
 #get the file name  
 #get num of lines if want to copy only some lines
-target=$1
 
 #help 
-if [ "$target" == "-h" ] || [ "$target" == "--help" ]; then
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     echo "Usage: clip <file> -p -lines -h"
     echo "-p: path to search for the file"
     echo "-lines: number of lines to copy to the clipboard"
@@ -20,27 +19,43 @@ if [ "$target" == "-h" ] || [ "$target" == "--help" ]; then
     exit 0
 fi
 
-# xhexk extrea args 
-if [ "$2" == "-lines" ] || [ "$4" == "-lines" ]; then 
-    numOfLines=$5
-else 
-    numOfLines=${numOfLines:-0}
-fi 
-
+while getopts "hp:l:" opt; do
+  case $opt in
+    h) show_help; exit 0 ;;
+    p) path="$OPTARG" ;;
+    l) numOfLines="$OPTARG" ;;
+    \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
+  esac
+done
+shift $((OPTIND-1))
+target=$1
 
 baseTarget=$(basename "$target")
 if [ "$target" == "$baseTarget" ]; then 
     if [ "$2" == "-p" ]; then
         path=$3
-        mapfile -t found_files < <(find "$path" -type f -name "$baseTarget")
+        # Using find with read to replace mapfile
+        found_files=()
+        while IFS= read -r line; do
+            found_files+=("$line")
+        done < <(find "$path" -type f -name "$baseTarget")
     else
-        mapfile -t found_files < <(find  -type f -name "$baseTarget")
+        # Using find with read to replace mapfile
+        found_files=()
+        while IFS= read -r line; do
+            found_files+=("$line")
+        done < <(find . -type f -name "$baseTarget")
         echo "Found files:" "${found_files[@]}"
     fi 
 else 
     
-    path1=$(dirname "$(realpath "$target")")
-    path=$(dirname "$(realpath "$3")")
+    # Only try to get realpath if $3 is provided
+    path1=$(dirname "$(realpath "$target" 2>/dev/null)" 2>/dev/null)
+    if [ -n "$3" ]; then
+        path=$(dirname "$(realpath "$3" 2>/dev/null)" 2>/dev/null)
+    else
+        path=""
+    fi
     
     #find correct path
     if [ -d "$path1" ] && [ -d "$path" ]; then
@@ -60,7 +75,11 @@ else
         fi
     fi
 
-    mapfile -t found_files < <(find "$path" -type f -name "$baseTarget")
+    # Using find with read to replace mapfile
+    found_files=()
+    while IFS= read -r line; do
+        found_files+=("$line")
+    done < <(find "$path" -type f -name "$baseTarget")
 fi
 
 # Check if more than one target exists
@@ -81,24 +100,23 @@ else
     exit 1
 fi
 
+# Check for clipboard command based on platform
+if command -v pbcopy >/dev/null 2>&1; then
+    CLIP_CMD="pbcopy"
+elif command -v xclip >/dev/null 2>&1; then
+    CLIP_CMD="xclip -selection clipboard"
+else
+    echo "Error: No clipboard command found. Please install xclip (Linux) or use macOS."
+    exit 1
+fi
+
 # Copy the contents of the file to the clipboard
 #or the first $lines lines of the file
 # Copy each of the first $lines lines of the file to the clipboard in separate operations
-if [ -z "$numOfLines" ]; then
-    cat "$target" | xclip -selection clipboard
+if [ -z "$numOfLines" ] || [ "$numOfLines" -eq 0 ]; then
+    cat "$target" | $CLIP_CMD 
     echo "Contents of $target copied to clipboard."
 else
-    count=0
-    while IFS= read -r line; do
-        # Increment the counter
-        count=$((count + 1))
-        echo "$line" 
-        echo "$line" | xclip -selection clipboard 
-        # Break the loop if the specified number of lines has been read
-        if (( count >= numOfLines )); then
-            echo "count: $count numOfLines: $numOfLines"
-            break
-        fi
-    done < "$target"
-    echo "Contents of $target copied to clipboard."
+    head -n "$numOfLines" "$target" | $CLIP_CMD
+    echo "First $numOfLines lines of $target copied to clipboard."
 fi
