@@ -9,9 +9,11 @@
 
 # Define help function first
 show_help() {
-    echo "Usage: clip <file> [-p path] [-l lines] [-h]"
+    echo "Usage: clip <file> [-p path] [-l lines|-l start:end] [-h]"
     echo "-p: path to search for the file"
-    echo "-l: number of lines to copy to the clipboard"
+    echo "-l: specify lines to copy in one of these formats:"
+    echo "    number       : copy first N lines"
+    echo "    start:end    : copy lines from start to end (inclusive)"
     echo "-h: display this help message"
     echo "Copy the contents of a file to the clipboard."
     echo "If lines are not provided, the entire file will be copied."
@@ -28,10 +30,6 @@ fi
 path=""
 numOfLines=""
 
-# If no arguments provided, show help
-if [ $# -eq 0 ]; then
-    show_help
-fi
 
 while getopts "hp:l:" opt; do
   case $opt in
@@ -49,10 +47,6 @@ if [ -z "$target" ]; then
     echo "Error: No file specified."
     show_help
 fi
-
-echo "Target: $target"
-echo "Path: $path"
-echo "Number of lines: $numOfLines"
 
 baseTarget=$(basename "$target")
 if [ "$target" == "$baseTarget" ]; then 
@@ -138,20 +132,53 @@ fi
 # Copy the contents of the file to the clipboard
 # If numOfLines is specified, only copy that many lines
 if [ -z "$numOfLines" ]; then
+    # Copy entire file
     cat "$target" | $CLIP_CMD 
     echo "Contents of $target copied to clipboard."
 else
-    # Validate numOfLines is a positive integer
-    if ! [[ "$numOfLines" =~ ^[0-9]+$ ]]; then
-        echo "Error: Number of lines must be a positive integer."
-        exit 1
-    fi
-    
-    if [ "$numOfLines" -eq 0 ]; then
-        cat "$target" | $CLIP_CMD
-        echo "Contents of $target copied to clipboard."
+    # Check if it's a range (contains a colon)
+    if [[ "$numOfLines" == *:* ]]; then
+        # Extract start and end line numbers
+        start_line=$(echo "$numOfLines" | cut -d':' -f1)
+        end_line=$(echo "$numOfLines" | cut -d':' -f2)
+        
+        # Validate start_line is a positive integer
+        if ! [[ "$start_line" =~ ^[0-9]+$ ]]; then
+            echo "Error: Start line must be a positive integer."
+            exit 1
+        fi
+        
+        # Validate end_line is a positive integer
+        if ! [[ "$end_line" =~ ^[0-9]+$ ]]; then
+            echo "Error: End line must be a positive integer."
+            exit 1
+        fi
+        
+        # Validate start_line <= end_line
+        if [ "$start_line" -gt "$end_line" ]; then
+            echo "Error: Start line must be less than or equal to end line."
+            exit 1
+        fi
+        
+        # Calculate number of lines to display
+        num_lines=$((end_line - start_line + 1))
+        
+        # Use sed to extract the range of lines
+        sed -n "${start_line},${end_line}p" "$target" | $CLIP_CMD
+        echo "Lines ${start_line} to ${end_line} of $target copied to clipboard."
     else
-        head -n "$numOfLines" "$target" | $CLIP_CMD
-        echo "First $numOfLines lines of $target copied to clipboard."
+        # Validate numOfLines is a positive integer
+        if ! [[ "$numOfLines" =~ ^[0-9]+$ ]]; then
+            echo "Error: Number of lines must be a positive integer."
+            exit 1
+        fi
+        
+        if [ "$numOfLines" -eq 0 ]; then
+            cat "$target" | $CLIP_CMD
+            echo "Contents of $target copied to clipboard."
+        else
+            head -n "$numOfLines" "$target" | $CLIP_CMD
+            echo "First $numOfLines lines of $target copied to clipboard."
+        fi
     fi
 fi
