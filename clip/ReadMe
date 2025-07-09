@@ -39,11 +39,12 @@ If you don't provide a path with your file name, Clip will search in the current
 
 ## Cross-Platform Support
 
-Clip automatically detects your operating system and uses the appropriate clipboard command:
+Clip automatically detects your operating system and uses the appropriate clipboard command in this order of preference:
 
-* macOS: Uses `pbcopy`
-* Linux (X11): Uses `xclip`
-* Linux (Wayland): Uses `wl-copy`
+1. `clipse` (if installed)
+2. `pbcopy` (macOS)
+3. `xclip` (Linux X11)
+4. `wl-copy` (Linux Wayland)
 
 ## Features
 
