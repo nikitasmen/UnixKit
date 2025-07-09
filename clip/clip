@@ -120,7 +120,7 @@ fi
 # Check for clipboard command based on platform
 # Try to use clipse first if available, then fall back to other clipboard managers
 if command -v clipse >/dev/null 2>&1; then
-    CLIP_CMD="clipse"
+    CLIP_CMD="clipse -c"
 elif command -v pbcopy >/dev/null 2>&1; then
     CLIP_CMD="pbcopy"
 elif command -v xclip >/dev/null 2>&1; then
