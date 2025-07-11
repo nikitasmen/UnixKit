@@ -1,11 +1,41 @@
 #!/usr/bin/env bash
 
-set -e
+# Check if Docker is running first
+check_docker() {
+    if ! docker info >/dev/null 2>&1; then
+        echo "❌ Error: Docker is not running."
+        echo "Please start Docker Desktop or the Docker daemon and try again."
+        echo ""
+        echo "For macOS: Start Docker Desktop from the Applications folder"
+        echo "For Linux: Run 'sudo systemctl start docker'"
+        exit 1
+    fi
+}
+
+# Check if the Ollama container is running
+check_ollama_container() {
+    if ! docker container inspect "$CONTAINER_NAME" >/dev/null 2>&1; then
+        echo "❌ Error: Ollama container not found."
+        echo "Starting Ollama container..."
+        docker run -d --name "$CONTAINER_NAME" -p "$PORT":11434 "$IMAGE_NAME"
+        echo "⏳ Waiting for Ollama to initialize..."
+        sleep 5
+    elif [ "$(docker container inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" != "true" ]; then
+        echo "⚠️ Ollama container exists but is not running. Starting it..."
+        docker start "$CONTAINER_NAME"
+        echo "⏳ Waiting for Ollama to initialize..."
+        sleep 5
+    fi
+}
 
 CONTAINER_NAME="ollama"
 IMAGE_NAME="ollama/ollama"
 PORT="11434"
 MODEL="${1:-llama3}"
+
+# Run checks
+check_docker
+check_ollama_container
 
 echo "🧠 Running model: $MODEL"
 docker exec -it "$CONTAINER_NAME" ollama run "$MODEL"
