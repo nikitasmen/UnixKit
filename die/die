@@ -5,6 +5,13 @@
 #-l for logout 
 
 case "$1" in
+  -h | --help)
+    echo "Usage: $0 [-s | -l | -h]"
+    echo "  -s: Sleep the system"
+    echo "  -l: Log out of the current session"
+    echo "  -h: Display this help message"
+    exit 0
+    ;; 
   -s)
     echo "Going to sleep..."
     systemctl suspend
