@@ -1,25 +1,76 @@
 # cleanBranches Script
 
 ## Overview
-The `cleanBranches` script is designed to help you manage and clean up your Git branches. It automates the process of deleting local branches that have already been merged into the main branch, helping you keep your repository clean and organized.
+
+The `cleanBranches` script is designed to help you manage and clean up your Git branches. It automates the process of deleting local branches that have already been merged into a specified branch, helping you keep your repository clean and organized.
 
 ## Features
-- List all local branches
-- Delete local branches that have been merged into the main branch
-- Option to force delete branches
+
+- Delete local branches that have been merged into a specified branch
+- Option to delete all branches except the specified branch
+- Force delete branches (even if not fully merged)
 - Interactive mode for selective branch deletion
 
 ## Usage
-1. Clone the repository containing the `cleanBranches` script.
-2. Navigate to the directory containing the script.
-3. Run the script using the following command:
-    ```
-    ./cleanBranches
-    ```
+
+```bash
+./cleanBranches [-f|--force] [-i|--interactive] [-a|--all] [branch_name]
+```
 
 ## Options
-- `-f` or `--force`: Force delete branches without confirmation.
-- `-i` or `--interactive`: Enable interactive mode for selective branch deletion.
 
-## Example
-To run the script in interactive mode:
+- `-f` or `--force`: Force delete branches without confirmation (uses `git branch -D` instead of `-d`)
+- `-i` or `--interactive`: Enable interactive mode for selective branch deletion
+- `-a` or `--all`: Delete all branches except the specified branch, not just merged ones
+- `branch_name`: Name of the branch to keep (optional, will prompt if not provided)
+
+## Examples
+
+### Basic usage
+
+```bash
+./cleanBranches main
+```
+
+Deletes branches that have been merged into the main branch.
+
+### Delete all branches except main
+
+```bash
+./cleanBranches -a main
+```
+
+Deletes all branches except main, regardless of merge status.
+
+### Force delete all branches except main
+
+```bash
+./cleanBranches -a -f main
+```
+
+Force deletes all branches except main, even if they contain unmerged changes.
+
+### Interactive mode
+
+```bash
+./cleanBranches -i main
+```
+
+Asks for confirmation before deleting each branch that has been merged into main.
+
+## How It Works
+
+1. The script first determines which branch to keep (via command line argument or prompt)
+2. It then finds branches to delete based on your options:
+   - Without `-a`: Only branches that are fully merged into the specified branch
+   - With `-a`: All branches except the specified branch
+3. Depending on your options:
+   - With `-i`: Asks for confirmation before deleting each branch
+   - With `-f`: Uses `git branch -D` to force delete branches
+   - Default: Uses standard `git branch -d` to safely delete only merged branches
+
+## Notes
+
+- The script must be run from within a Git repository
+- You cannot delete the branch you're currently on
+- In interactive mode, you'll be prompted for each branch deletion
