@@ -1,0 +1,94 @@
+# Lame - Llama3 Access Made Easy
+
+A simple yet robust wrapper script for running the Llama3 model (or other models) in Ollama via Docker.
+
+## Overview
+
+Lame provides a convenient command-line interface to run Llama3 (or other LLM models) using Ollama in a Docker container. The script handles common Docker issues automatically, making it easier to interact with language models.
+
+## Features
+
+- One-command access to Llama3 and other Ollama models
+- Automatic Docker daemon status detection
+- Automatic Ollama container management:
+  - Creates the container if it doesn't exist
+  - Starts the container if it's stopped
+- User-friendly error messages with helpful instructions
+- Customizable model selection
+
+## Prerequisites
+
+- Docker installed on your system
+- Internet connection (for first-time model downloads)
+
+## Installation
+
+You can install Lame using ScriStaller:
+
+```bash
+./scriptInstaller/ScriStaller ./lame/lame lame
+```
+
+Or simply make it executable:
+
+```bash
+chmod +x lame/lame
+```
+
+## Usage
+
+```bash
+./lame [model_name]
+```
+
+Where `model_name` is optional and defaults to "llama3".
+
+### Examples
+
+Run with the default model (llama3):
+
+```bash
+./lame
+```
+
+Run with a different model:
+
+```bash
+./lame llama3:8b
+```
+
+```bash
+./lame codellama
+```
+
+## How It Works
+
+1. The script first checks if Docker is running
+2. It then verifies if the Ollama container exists and is running
+   - Creates or starts the container if needed
+3. Finally, it launches the specified model in interactive mode
+
+## Configuration
+
+You can modify these variables at the top of the script:
+
+- `CONTAINER_NAME`: Name of the Docker container (default: "ollama")
+- `IMAGE_NAME`: Docker image to use (default: "ollama/ollama")
+- `PORT`: Port to expose (default: "11434")
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. Make sure Docker is installed and running
+2. Check your internet connection if downloading a model for the first time
+3. If the container fails to start, try removing it and letting the script recreate it:
+
+   ```bash
+   docker rm ollama
+   ./lame
+   ```
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
