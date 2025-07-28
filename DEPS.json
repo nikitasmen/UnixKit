@@ -1,0 +1,143 @@
+{
+  "common": [
+    "bash",
+    "git"
+  ],
+  "systems": {
+    "Nix": {
+      "packages": [
+        "bash",
+        "git",
+        "xclip",
+        "wl-clipboard",
+        "python3",
+        "python3Packages.pip",
+        "nodejs",
+        "nodejs.pkgs.npm",
+        "jdk",
+        "gcc",
+        "xdotool",
+        "xorg.xprop",
+        "gnome.gnome-session",
+        "tree",
+        "jq"
+      ],
+      "docker": {
+        "packages": ["docker"],
+        "commands": [
+          "sudo systemctl enable docker",
+          "sudo systemctl start docker",
+          "sudo usermod -aG docker \"$USER\""
+        ],
+        "nixConfig": [
+          "{ config, pkgs, ... }:",
+          "{",
+          "  virtualisation.docker.enable = true;",
+          "  users.users.$USER.extraGroups = [ \"docker\" ];",
+          "}"
+        ]
+      }
+    },
+    "Debian": {
+      "packages": [
+        "bash",
+        "git",
+        "xclip",
+        "wl-clipboard",
+        "python3",
+        "python3-pip",
+        "nodejs",
+        "npm",
+        "default-jdk",
+        "g++",
+        "gcc",
+        "xdotool",
+        "x11-utils",
+        "gnome-session",
+        "tree"
+      ],
+      "docker": {
+        "packages": ["docker.io"],
+        "commands": [
+          "sudo systemctl enable docker",
+          "sudo systemctl start docker",
+          "sudo usermod -aG docker \"$USER\""
+        ]
+      }
+    },
+    "Arch": {
+      "packages": [
+        "bash",
+        "git",
+        "xclip",
+        "wl-clipboard",
+        "python",
+        "python-pip",
+        "nodejs",
+        "npm",
+        "jdk-openjdk",
+        "gcc",
+        "xdotool",
+        "xorg-xprop",
+        "gnome-session",
+        "tree"
+      ],
+      "docker": {
+        "packages": ["docker"],
+        "commands": [
+          "sudo systemctl enable docker",
+          "sudo systemctl start docker",
+          "sudo usermod -aG docker \"$USER\""
+        ]
+      }
+    },
+    "Fedora": {
+      "packages": [
+        "bash",
+        "git",
+        "xclip",
+        "wl-copy",
+        "python3",
+        "python3-pip",
+        "nodejs",
+        "npm",
+        "java-latest-openjdk",
+        "gcc",
+        "xdotool",
+        "xorg-x11-utils",
+        "gnome-session-utils",
+        "tree"
+      ],
+      "docker": {
+        "packages": ["dnf-plugins-core", "docker-ce", "docker-ce-cli", "containerd.io"],
+        "commands": [
+          "sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo",
+          "sudo systemctl enable docker",
+          "sudo systemctl start docker",
+          "sudo usermod -aG docker \"$USER\""
+        ]
+      }
+    },
+    "macOS": {
+      "packages": [
+        "bash",
+        "git",
+        "tree",
+        "node",
+        "python@3",
+        "openjdk",
+        "docker"
+      ],
+      "docker": {
+        "instructions": "Please install Docker Desktop for macOS:\nhttps://www.docker.com/products/docker-desktop/"
+      }
+    }
+  },
+  "pythonDeps": {
+    "assistant": [
+      "whisper",
+      "numpy",
+      "sounddevice"
+    ]
+  }
+}
