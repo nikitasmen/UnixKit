@@ -452,11 +452,11 @@ install_python_deps() {
     print_info "Installing Python dependencies for assistant tool..."
     
     # First try to use requirements.txt if it exists
-    if [ -f "$SCRIPT_DIR/assistant/requirments.txt" ]; then
+    if [ -f "$SCRIPT_DIR/assistant/requirements.txt" ]; then
         if check_command "pip3"; then
-            pip3 install -r "$SCRIPT_DIR/assistant/requirments.txt"
+            pip3 install -r "$SCRIPT_DIR/assistant/requirements.txt"
         elif check_command "pip"; then
-            pip install -r "$SCRIPT_DIR/assistant/requirments.txt"
+            pip install -r "$SCRIPT_DIR/assistant/requirements.txt"
         else
             print_error "Could not find pip or pip3. Please install manually."
             return 1
