@@ -33,7 +33,59 @@ UnitKit offers various utility scripts that help automate common tasks and enhan
 
 ## Installation
 
-To install any of these scripts:
+### Installing Dependencies
+
+KubuntuCustoms provides an automatic dependency installer that works across multiple operating systems:
+
+```bash
+# Make the installer executable
+chmod +x install_dependencies.sh
+
+# Run the installer
+./install_dependencies.sh
+```
+
+The installer will automatically detect your operating system (Ubuntu/Debian, Arch Linux, Fedora, NixOS, or macOS) and install the required packages. All dependencies are defined in the `DEPS.json` file and loaded dynamically by the installer.
+
+#### NixOS Support
+
+For NixOS users:
+
+- The installer provides guidance on adding packages to your `configuration.nix` file
+- A temporary shell with all required packages is offered for immediate usage
+- Docker setup instructions specific to NixOS are provided
+
+For non-NixOS systems with Nix installed:
+
+- The system will use your native package manager (apt, pacman, dnf) if available
+- If no native package manager is found, Nix-specific options are provided:
+  - A temporary Nix shell with all dependencies
+  - A `shell.nix` file for your project directory
+- No packages are installed using `nix-env` to respect Nix's declarative approach
+
+#### Managing Dependencies
+
+A dependency manager script is also provided to help maintain the dependencies list:
+
+```bash
+# List dependencies for a specific system
+./deps_manager.sh list Debian
+
+# Add a package to a system's dependencies
+./deps_manager.sh add Arch fzf
+
+# Add a Python package for the assistant tool
+./deps_manager.sh addpy pandas
+
+# Export dependencies to individual files for each system
+./deps_manager.sh export
+```
+
+See [DEPENDENCIES.md](DEPENDENCIES.md) for a detailed description of all dependencies.
+
+### Installing Scripts
+
+To install any individual script:
 
 ```bash
 ./scriptInstaller/ScriStaller /path/to/script desired_command_name

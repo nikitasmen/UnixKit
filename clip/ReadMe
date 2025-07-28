@@ -1,70 +1,34 @@
-# Clip
+# clip
 
-A cross-platform utility script to copy file contents to your clipboard.
+A cross-platform Bash script to copy file contents to your clipboard, with flexible line selection and smart file search.
 
-## What is Clip?
+## Features
+- Copy file contents to clipboard
+- Specify number of lines to copy
+- Smart file search and interactive selection
+- Works on macOS, Linux X11, and Wayland
 
-Clip is a Bash script that allows you to copy the contents of a file to your system's clipboard. You can specify the number of lines to copy, or copy the entire file if you don't provide a line count. The script works across multiple platforms including macOS, Linux with X11, and Linux with Wayland.
+## Usage
+```bash
+./clip <file> [-p path] [-l lines] [-h]
+```
 
-## How to Use Clip
+### Options
+- `-p`: Specify the path to search for the file
+- `-l`: Number of lines to copy (default: entire file)
+- `-h`: Display help message
 
-To use Clip, simply run the script and provide the following arguments:
-
-* `<file>`: The name of the file you want to copy.
-* `-l <number>`: (Optional) The number of lines you want to copy. If omitted, the entire file will be copied.
-* `-p <path>`: (Optional) Specify a path to search for the file.
-
-For example:
-
+### Example
 ```bash
 ./clip my_file.txt -l 5
 ```
 
-This would copy the first 5 lines of `my_file.txt` to your clipboard.
-
-## Help and Options
-
-If you run Clip with the `-h` or `--help` option, it will display a help message that explains how to use the script:
-
-```bash
-Usage: clip <file> [-p path] [-l lines] [-h]
-  -p: Specify the path to search for the file
-  -l: Number of lines to copy (default is entire file)
-  -h: Display this help message
-```
-
-## Finding Files
-
-If you don't provide a path with your file name, Clip will search in the current directory. If there are multiple files with the same name, Clip will prompt you to choose one from a numbered list.
-
-## Cross-Platform Support
-
-Clip automatically detects your operating system and uses the appropriate clipboard command in this order of preference:
-
-1. `clipse` (if installed)
-2. `pbcopy` (macOS)
-3. `xclip` (Linux X11)
-4. `wl-copy` (Linux Wayland)
-
-## Features
-
-* Smart file search - finds files even with partial paths
-* Works across multiple operating systems
-* Interactive selection when multiple matches are found
-* Option to copy specific number of lines
-
 ## Installation
-
-You can install Clip using the ScriStaller script:
-
+You can install clip using the ScriStaller script:
 ```bash
 ./scriptInstaller/ScriStaller ./clip/clip clip
 ```
 
-This will make `clip` available as a command in your system.
-
-## Known Issues
-
-* If there are multiple files with the same name, you'll need to manually choose one.
-* The script uses `xclip` to interact with the clipboard, which may not work on all systems.
+## License
+This script is part of the KubuntuCustoms toolkit.
 
