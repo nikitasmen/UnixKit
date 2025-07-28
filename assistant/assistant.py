@@ -1,5 +1,4 @@
 import whisper
-import numpy as np
 import sounddevice as sd
 
 # Settings
@@ -8,7 +7,12 @@ sample_rate = 16000  # Whisper expects 16000 Hz
 
 # Record audio from microphone
 print("Recording...")
-audio = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='float32')
+audio = sd.rec(
+    int(duration * sample_rate),
+    samplerate=sample_rate,
+    channels=1,
+    dtype='float32'
+)
 sd.wait()
 print("Recording complete.")
 
@@ -16,7 +20,9 @@ print("Recording complete.")
 audio = audio.flatten()
 
 # Load model
-model = whisper.load_model("base")  # "turbo" only available via API or OpenAI's hosted solution
+model = whisper.load_model(
+    "base"  # "turbo" only available via API or OpenAI's hosted solution
+)
 
 # Pad or trim audio
 audio = whisper.pad_or_trim(audio)
@@ -26,7 +32,8 @@ mel = whisper.log_mel_spectrogram(audio).to(model.device)
 
 # Detect language
 _, probs = model.detect_language(mel)
-print(f"Detected language: {max(probs, key=probs.get)}")
+language = max(probs, key=probs.get)
+print(f"Detected language: {language}")
 
 # Decode the audio
 options = whisper.DecodingOptions()
