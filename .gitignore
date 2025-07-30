@@ -6,3 +6,6 @@
 
 #ignore DatArch folder 
 DatArch
+
+#ignore all build files
+build/
