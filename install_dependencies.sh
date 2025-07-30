@@ -260,8 +260,13 @@ install_debian_deps() {
         sudo apt install -y $docker_packages
         
         # Execute Docker setup commands
-        for cmd in $(get_json_value '.systems.Debian.docker.commands[]'); do
-            eval "$cmd"
+        get_json_value '.systems.Debian.docker.commands[]' | while read -r cmd; do
+            print_info "Executing: $cmd"
+            if ! eval "$cmd"; then
+                print_error "Failed to execute: $cmd"
+                # Optionally, exit here if the command is critical
+                # exit 1
+            fi
         done
         
         print_warning "Log out and back in for Docker group changes to take effect."
@@ -293,8 +298,11 @@ install_arch_deps() {
         sudo pacman -S --needed $docker_packages
         
         # Execute Docker setup commands
-        for cmd in $(get_json_value '.systems.Arch.docker.commands[]'); do
-            eval "$cmd"
+        get_json_value '.systems.Arch.docker.commands[]' | while read -r cmd; do
+            print_info "Executing: $cmd"
+            if ! eval "$cmd"; then
+                print_error "Failed to execute: $cmd"
+            fi
         done
         
         print_warning "Log out and back in for Docker group changes to take effect."
@@ -326,8 +334,11 @@ install_fedora_deps() {
         sudo dnf install -y $docker_packages
         
         # Execute Docker setup commands
-        for cmd in $(get_json_value '.systems.Fedora.docker.commands[]'); do
-            eval "$cmd"
+        get_json_value '.systems.Fedora.docker.commands[]' | while read -r cmd; do
+            print_info "Executing: $cmd"
+            if ! eval "$cmd"; then
+                print_error "Failed to execute: $cmd"
+            fi
         done
         
         print_warning "Log out and back in for Docker group changes to take effect."
