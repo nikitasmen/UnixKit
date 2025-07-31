@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 
 # =============================================================================
-# man_wrapper.sh - Documentation viewer for KubuntuCustoms scripts
+# man_wrapper - Documentation viewer for KubuntuCustoms scripts
 # Displays script docs, README, or man pages with beautiful Markdown rendering
+# 
+# Usage: man_wrapper [OPTIONS] SCRIPT_NAME
 # =============================================================================
+
+# Exit on error, undefined variables, and pipeline failures
+set -euo pipefail
+
+# Set locale for consistent sorting and character handling
+export LC_ALL=C
 
 # Colors for output
 RED='\033[0;31m'
@@ -19,9 +27,17 @@ print_error() { echo -e "${RED}✖ $1${NC}"; }
 # Show script's internal docs
 show_script_docs() {
     local script_path=$1
+    if ! [ -r "$script_path" ]; then
+        print_error "Cannot read script: $script_path"
+        return 1
+    fi
+    
     if grep -q '^# =' "$script_path"; then
-        awk '/^# =/,/^# =====/{if (!/^# =/ && !/^# =====/) print}' "$script_path" | \
-            sed 's/^# //' | less -F -X -E -R
+        if ! awk '/^# =/,/^# =====/{if (!/^# =/ && !/^# =====/) print}' "$script_path" | \
+               sed 's/^# //' | less -F -X -E -R; then
+            print_warning "Failed to display script documentation. Using fallback method."
+            grep '^# ' "$script_path" | sed 's/^# //' | less -F -X -E -R
+        fi
         return 0
     fi
     return 1
@@ -36,20 +52,39 @@ command_exists() {
 show_markdown() {
     local file=$1
     
+    if ! [ -r "$file" ]; then
+        print_error "Cannot read file: $file"
+        return 1
+    fi
+    
     # Try different markdown viewers in order of preference
     if command_exists glow; then
         # Use glow with custom style if available
-        glow -s dark "$file"
+        if ! glow -s dark "$file"; then
+            print_warning "glow failed, trying next viewer..."
+            return 1
+        fi
     elif command_exists mdcat; then
         # Use mdcat if available
-        mdcat "$file"
+        if ! mdcat "$file"; then
+            print_warning "mdcat failed, trying next viewer..."
+            return 1
+        fi
     elif command_exists pandoc; then
         # Use pandoc to convert to terminal output
-        pandoc -t plain "$file" | less -F -X -E -R
+        if ! pandoc -t plain "$file" 2>/dev/null | less -F -X -E -R; then
+            print_warning "pandoc failed, using fallback..."
+            return 1
+        fi
     else
         # Fallback to basic less
-        less -F -X -E -R "$file"
+        if ! less -F -X -E -R "$file"; then
+            print_error "Failed to display file with less"
+            return 1
+        fi
     fi
+    
+    return 0
 }
 
 # Show README file if it exists
@@ -76,11 +111,22 @@ find_script() {
     local script_name=$1
     
     # Check if it's a path to a file
-    [ -f "$script_name" ] && { echo "$script_name"; return 0; }
+    if [ -f "$script_name" ]; then
+        echo "$script_name"
+        return 0
+    fi
     
     # Find in current directory or subdirectories
-    local script_path=$(find . -type f \( -name "${script_name}" -o -name "${script_name}.sh" \) -print -quit 2>/dev/null)
-    [ -n "$script_path" ] && echo "$script_path" && return 0
+    local script_path
+    if ! script_path=$(find . -type f \( -name "${script_name}" -o -name "${script_name}.sh" \) -print -quit 2>/dev/null); then
+        print_error "Error while searching for script: $script_name"
+        return 1
+    fi
+    
+    if [ -n "$script_path" ]; then
+        echo "$script_path"
+        return 0
+    fi
     
     return 1
 }
