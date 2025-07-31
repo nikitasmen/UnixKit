@@ -16,13 +16,19 @@ usage() {
 # Handle -l or --list
 if [[ "${1:-}" == "-l" || "${1:-}" == "--list" ]]; then
   echo "Available scripts:"
+  found_scripts=0
   for dir in "$SCRIPT_DIR"/*/; do
-    script_name="$(basename "$dir")"
+    script_name="$(basename "$dir" 2>/dev/null || continue)"
     script_path="$dir$script_name"
     if [[ -f "$script_path" && -x "$script_path" ]]; then
       echo "  $script_name"
+      found_scripts=1
     fi
   done
+  
+  if [[ $found_scripts -eq 0 ]]; then
+    echo "  No executable scripts found in $SCRIPT_DIR"
+  fi
   exit 0
 fi
 
@@ -37,7 +43,13 @@ shift
 TARGET="$SCRIPT_DIR/$COMMAND/$COMMAND"
 
 if [ ! -f "$TARGET" ]; then
-  echo "Error: Script $TARGET not found"
+  echo "Error: Script '$COMMAND' not found in $SCRIPT_DIR/$COMMAND/"
+  echo "Available scripts:"
+  ls -1 "$SCRIPT_DIR" | grep -v '^\..*$' | while read -r dir; do
+    if [ -x "$SCRIPT_DIR/$dir/$dir" ]; then
+      echo "  $dir"
+    fi
+  done
   exit 1
 fi
 
