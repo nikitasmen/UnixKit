@@ -16,7 +16,6 @@ usage() {
 # Handle -l or --list
 if [[ "${1:-}" == "-l" || "${1:-}" == "--list" ]]; then
   echo "Available scripts:"
-  tree
   for dir in "$SCRIPT_DIR"/*/; do
     script_name="$(basename "$dir")"
     script_path="$dir$script_name"
