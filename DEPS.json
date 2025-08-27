@@ -152,11 +152,7 @@
     "assistant": [
       "whisper",
       "numpy",
-      "sounddevice",
-      "import",
-      "as",
-      "sd",
-      "import"
+      "sounddevice"
     ]
   }
 }
