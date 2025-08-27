@@ -1,44 +1,60 @@
-#!bin/bash
+#!/usr/bin/env bash
 
-#script that runs scripts withoput caring about paths 
-#and compiler as it founds the script and runs it 
-#taks as argument only the name of the script 
+# script that runs scripts without caring about paths 
+# and compiler as it finds the script and runs it 
+# takes as argument only the name of the script 
 
+# Check if script argument is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <script_file>"
+    echo "Supported extensions: py, sh, js, java, cpp, c, test.ts"
+    exit 1
+fi
 
+script="$1"
 
-script=$1
+# Check if script file exists
+if [ ! -f "$script" ]; then
+    echo "Error: Script file '$script' not found."
+    exit 1
+fi
+
 script_name=$(basename "$script") 
 scriptDir=$(dirname "$script")
-#Get extension of file 
+# Get extension of file 
 extension="${script##*.}"
 
-case $extension in
+case "$extension" in
     "py")
-        python3 $script
+        python3 "$script"
         ;;
     "sh")
-        bash $script
+        bash "$script"
         ;;
     "js")
-        node $script        
+        node "$script"        
         ;;
     "java")
-        javac $script
-        java $script_name
+        javac "$script"
+        # Remove .java extension for class name
+        class_name="${script_name%.*}"
+        java -cp "$scriptDir" "$class_name"
         ;;
     "cpp")
-        g++ $script
-        ./a.out
+        g++ "$script" -o "${script%.*}"
+        "./${script%.*}"
         ;;
     "c")
-        gcc $script
-        ./a.out
+        gcc "$script" -o "${script%.*}"
+        "./${script%.*}"
         ;;
     "test.ts")
-        npx playwright test $script 
-    
-    *)
-        echo "Extension not supported"
+        npx playwright test "$script"
         ;;
-esacs
+    *)
+        echo "Extension '$extension' not supported"
+        echo "Supported extensions: py, sh, js, java, cpp, c, test.ts"
+        exit 1
+        ;;
+esac
 
