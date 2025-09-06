@@ -1,11 +1,24 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 CONTAINER_NAME="ollama"
 IMAGE_NAME="ollama/ollama"
 PORT="11434"
 MODEL="${1:-llama3}"
 
+# Check if container exists
+if ! docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}\$"; then
+    echo "🚀 Creating new container: $CONTAINER_NAME"
+    docker run -d --name "$CONTAINER_NAME" -p "$PORT:11434" "$IMAGE_NAME"
+fi
+
+# Ensure container is running
+if [ "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" != "true" ]; then
+    echo "▶️  Starting container: $CONTAINER_NAME"
+    docker start "$CONTAINER_NAME" >/dev/null
+fi
+
 echo "🧠 Running model: $MODEL"
 docker exec -it "$CONTAINER_NAME" ollama run "$MODEL"
+
