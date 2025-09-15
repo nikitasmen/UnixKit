@@ -3,6 +3,7 @@
 #execute to shutdown 
 #-s for sleep 
 #-l for logout 
+#-t for timer [seconds]
 
 case "$1" in
   -s)
@@ -12,6 +13,16 @@ case "$1" in
   -l)
     echo "Logging out..."
     gnome-session-quit --logout --no-prompt
+    ;;
+  -t) 
+   if [ -z "$2" ]; then
+      timer=15
+    else
+      timer="$2"
+    fi
+    echo "Dying... in $timer seconds"
+    sleep "$timer"
+    systemctl poweroff
     ;;
   *)
     echo "Shutting down..."
