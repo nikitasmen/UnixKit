@@ -29,7 +29,7 @@ AVAILABLE_MODELS=(
     "tinyllama"
 )
 
-# Function to check if Docker daemon is running
+# Check if Docker daemon is running
 check_docker_daemon() {
     if ! docker info >/dev/null 2>&1; then
         return 1
@@ -37,19 +37,16 @@ check_docker_daemon() {
     return 0
 }
 
-# Function to start Docker daemon
+# Start Docker daemon
 start_docker_daemon() {
     echo "🐳 Docker daemon is not running. Attempting to start it..."
-    
-    # Detect OS and start Docker accordingly
+
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS - try to start Docker Desktop
         if command -v open >/dev/null 2>&1; then
             echo "🚀 Starting Docker Desktop on macOS..."
             open -a Docker
-            echo "⏳ Waiting for Docker to start (this may take a moment)..."
-            
-            # Wait up to 60 seconds for Docker to start
+            echo "⏳ Waiting for Docker to start..."
+
             local count=0
             while [ $count -lt 60 ]; do
                 if check_docker_daemon; then
@@ -59,33 +56,30 @@ start_docker_daemon() {
                 sleep 1
                 ((count++))
             done
-            
+
             echo "❌ Docker failed to start within 60 seconds"
-            echo "💡 Please start Docker Desktop manually and try again"
             return 1
         else
-            echo "❌ Cannot start Docker on macOS. Please start Docker Desktop manually"
+            echo "❌ Cannot auto-start Docker Desktop"
             return 1
         fi
     else
-        # Linux - try to start Docker service
         if command -v systemctl >/dev/null 2>&1; then
             echo "🚀 Starting Docker service on Linux..."
             if sudo systemctl start docker; then
-                echo "✅ Docker service started successfully!"
+                echo "✅ Docker started!"
                 return 0
             else
                 echo "❌ Failed to start Docker service"
                 return 1
             fi
         else
-            echo "❌ Cannot start Docker daemon. Please start Docker manually"
+            echo "❌ Cannot start Docker daemon"
             return 1
         fi
     fi
 }
 
-# Function to show help
 show_help() {
     echo "Usage: $0 [MODEL_NAME] [OPTIONS]"
     echo ""
@@ -99,14 +93,8 @@ show_help() {
     echo "  -l, --list     List available models"
     echo "  -s, --status   Show container status"
     echo ""
-    echo "Examples:"
-    echo "  $0                    # Run default model (llama3)"
-    echo "  $0 mistral           # Run mistral model"
-    echo "  $0 codellama:7b      # Run specific codellama variant"
-    echo "  $0 --list            # List all available models"
 }
 
-# Function to list models
 list_models() {
     echo "Available models:"
     for model in "${AVAILABLE_MODELS[@]}"; do
@@ -114,13 +102,12 @@ list_models() {
     done
 }
 
-# Function to show container status
 show_status() {
     if ! check_docker_daemon; then
         echo "❌ Docker daemon is not running"
         return 1
     fi
-    
+
     if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}\$"; then
         if [ "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" = "true" ]; then
             echo "✅ Container $CONTAINER_NAME is running"
@@ -150,7 +137,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         -*)
             echo "Unknown option: $1"
-            echo "Use -h or --help for usage information"
             exit 1
             ;;
         *)
@@ -165,10 +151,23 @@ if [[ ! " ${AVAILABLE_MODELS[*]} " =~ " ${MODEL} " ]]; then
     echo "❌ Error: Model '$MODEL' is not available"
     echo ""
     list_models
-    echo ""
-    echo "Use -l or --list to see all available models"
     exit 1
 fi
+
+###########################################################
+# 🔥 NEW FEATURE: use system ollama if installed
+###########################################################
+
+if command -v ollama >/dev/null 2>&1; then
+    echo "🧠 Using system ollama (no Docker)"
+    exec ollama run "$MODEL"
+fi
+
+echo "🐳 System ollama not found. Falling back to Docker..."
+
+###########################################################
+# Docker fallback logic
+###########################################################
 
 # Check and start Docker daemon if needed
 if ! check_docker_daemon; then
@@ -178,7 +177,7 @@ if ! check_docker_daemon; then
     fi
 fi
 
-# Check if container exists
+# Create container if missing
 if ! docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}\$"; then
     echo "🚀 Creating new container: $CONTAINER_NAME"
     docker run -d --name "$CONTAINER_NAME" -p "$PORT:11434" "$IMAGE_NAME"
@@ -190,7 +189,5 @@ if [ "$(docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME")" != "true" ]; 
     docker start "$CONTAINER_NAME" >/dev/null
 fi
 
-echo "🧠 Running model: $MODEL"
-echo "💡 Tip: Use Ctrl+C to exit the model session"
-docker exec -it "$CONTAINER_NAME" ollama run "$MODEL"
-
+echo "🧠 Running model in Docker: $MODEL"
+exec docker exec -it "$CONTAINER_NAME" ollama run "$MODEL"
