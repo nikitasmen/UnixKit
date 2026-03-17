@@ -1,4 +1,4 @@
-# ScriStaller
+# scriptInstaller
 
 A Bash script to easily install and manage your own scripts on your system.
 
@@ -9,7 +9,7 @@ A Bash script to easily install and manage your own scripts on your system.
 
 ## Usage
 ```bash
-./ScriStaller <script> <commandName>
+./scriptInstaller <script> <commandName>
 ```
 
 - `<script>`: Path to the script you want to install
@@ -17,11 +17,11 @@ A Bash script to easily install and manage your own scripts on your system.
 
 ### Example
 ```bash
-./ScriStaller my_script.sh my_command
+./scriptInstaller my_script.sh my_command
 ```
 
 ## Tips
-- To uninstall, run ScriStaller again with the same script but omit the command name
+- To uninstall, run scriptInstaller again with the same script but omit the command name
 - Ensure you have permissions to write to /usr/local/bin/
 
 ## License
