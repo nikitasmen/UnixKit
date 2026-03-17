@@ -24,9 +24,9 @@ A cross-platform Bash script to copy file contents to your clipboard, with flexi
 ```
 
 ## Installation
-You can install clip using the ScriStaller script:
+You can install clip using the scriptInstaller script:
 ```bash
-./scriptInstaller/ScriStaller ./clip/clip clip
+./scriptInstaller/scriptInstaller ./clip/clip clip
 ```
 
 ## License

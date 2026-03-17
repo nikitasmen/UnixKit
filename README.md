@@ -19,7 +19,7 @@ UnitKit offers various utility scripts that help automate common tasks and enhan
 ### 💻 Development Tools
 - **cleanBranches** - Clean up Git branches with interactive or force options
 - **scriptRunner** - Run scripts in different languages without worrying about compiler selection
-- **ScriStaller** - Install and manage custom scripts on your system
+- **scriptInstaller** - Install and manage custom scripts on your system
 - **zoomer** - Store and quickly access Zoom meeting links
 
 ### 🔐 Password Management
@@ -88,4 +88,4 @@ See [DEPENDENCIES.md](DEPENDENCIES.md) for a detailed description of all depende
 To install any individual script:
 
 ```bash
-./scriptInstaller/ScriStaller /path/to/script desired_command_name
+./scriptInstaller/scriptInstaller /path/to/script desired_command_name

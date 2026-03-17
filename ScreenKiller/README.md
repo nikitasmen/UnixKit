@@ -8,7 +8,7 @@ A script to turn off your screen with a simple command.
 
 ## Usage
 ```bash
-./screenKiller
+./ScreenKiller
 ```
 
 ## License
